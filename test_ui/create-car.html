@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create Car Listing</title>
+</head>
+<body>
+  <h1>Create a New Car Listing</h1>
+  <form id="car-form">
+    <label>Make: <input type="text" name="make" required /></label><br />
+    <label>Model: <input type="text" name="model" required /></label><br />
+    <label>Year: <input type="number" name="year" required /></label><br />
+    <label>Description: <textarea name="description" required></textarea></label><br />
+    <label>Seats: <input type="number" name="seats" required /></label><br />
+    <label>Price/Day: <input type="number" step="0.01" name="pricePerDay" required /></label><br />
+    <label>Location ID: <input type="number" name="location" required /></label><br />
+    <label>Transmission:
+      <select name="transmission">
+        <option value="automatic">Automatic</option>
+        <option value="manual">Manual</option>
+      </select>
+    </label><br />
+    <label>Car Type:
+      <select name="carType">
+        <option value="sedan">Sedan</option>
+        <option value="suv">SUV</option>
+        <option value="minivan">Minivan</option>
+        <option value="camper">Camper</option>
+        <option value="hatchback">Hatchback</option>
+        <option value="coupe">Coupe</option>
+        <option value="convertible">Convertible</option>
+        <option value="pickup">Pickup</option>
+        <option value="other">Other</option>
+      </select>
+    </label><br />
+    <label>Fuel Type:
+      <select name="fuelType">
+        <option value="petrol">Petrol</option>
+        <option value="diesel">Diesel</option>
+        <option value="hybrid">Hybrid</option>
+        <option value="electric">Electric</option>
+      </select>
+    </label><br />
+    <button type="submit">Create Listing</button>
+  </form>
+
+  <p id="response"></p>
+
+  <script>
+    document.getElementById('car-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(e.target);
+      const carData = Object.fromEntries(formData.entries());
+
+      // Convert number fields
+      carData.year = parseInt(carData.year);
+      carData.seats = parseInt(carData.seats);
+      carData.pricePerDay = parseFloat(carData.pricePerDay);
+      carData.location = parseInt(carData.location);
+
+      try {
+        const response = await fetch('http://localhost:8000/api/cars/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('access_token'), // assuming token is stored
+          },
+          body: JSON.stringify(carData),
+        });
+
+        const result = await response.json();
+        document.getElementById('response').innerText = JSON.stringify(result, null, 2);
+
+        if (response.ok) {
+          alert('Car listing created successfully!');
+        } else {
+          alert('Error: ' + JSON.stringify(result));
+        }
+
+      } catch (err) {
+        console.error('Error creating car:', err);
+        alert('Network error or server issue.');
+      }
+    });
+  </script>
+</body>
+</html>
