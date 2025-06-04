@@ -3,13 +3,14 @@ from smtplib import SMTPException
 from django.conf import settings
 from django.core.mail import send_mail
 from django.http import JsonResponse
-from rest_framework import mixins, viewsets
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
-
-from api.models import User
+from rest_framework import mixins, viewsets, generics
+from rest_framework.decorators import api_view, permission_classes, action
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from api.models import User, Car
 from api.permissions import UserPermission
-from api.serializers import ContactFormSerializer, UserSerializer
+from api.serializers import ContactFormSerializer, UserSerializer, CarSerializer, CarDetailSerializer, CarListSerializer
+
 
 
 @permission_classes([UserPermission])
@@ -49,3 +50,26 @@ def contact(request):
         return JsonResponse(serializer.errors, status=400)
 
     return JsonResponse({"ok": "ok"})
+
+
+class CarViewSet(viewsets.ModelViewSet):
+    queryset = Car.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+    @action(detail=False, methods=["get"], permission_classes=[AllowAny])
+    def mine(self, request):
+        cars = self.queryset.all()  #filter(owner=request.user)
+        serializer = self.get_serializer(cars, many=True)
+        return Response(serializer.data)
+    
+    def get_serializer_class(self):
+        if self.action == "retrieve":
+            return CarDetailSerializer
+        elif self.action in ["mine", "list"]:
+            return CarListSerializer
+        return CarSerializer
+    
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)

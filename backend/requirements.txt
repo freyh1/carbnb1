@@ -9,3 +9,4 @@ djangorestframework-simplejwt
 djangorestframework-camel-case
 Pillow
 uvicorn[standard]
+requests

@@ -7,11 +7,12 @@ from django.urls import include, path, re_path
 from django.views.generic import TemplateView
 from rest_framework import routers
 
-from api.views import UserViewSet, contact
+from api.views import UserViewSet, contact, CarViewSet
 
 router = routers.DefaultRouter()
 
 router.register(r"users", UserViewSet, basename="user")
+router.register("cars", CarViewSet)
 
 urlpatterns = (
     [

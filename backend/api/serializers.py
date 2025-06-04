@@ -4,7 +4,7 @@ from dj_rest_auth.serializers import (
 from django.conf import settings
 from rest_framework import serializers
 
-from api.models import User
+from api.models import User, Car
 from api.utils import password_reset_url_generator
 
 
@@ -48,3 +48,24 @@ class PasswordResetSerializer(BasePasswordResetSerializer):
 
         opts.update(self.get_email_options())
         self.reset_form.save(**opts)
+
+class CarSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Car
+        fields = "__all__"
+        read_only_fields = ["owner"]
+
+class CarDetailSerializer(serializers.ModelSerializer):
+    owner = UserSerializer(read_only = True)
+    location = serializers.StringRelatedField
+    images = serializers.StringRelatedField(many=True)
+    reviews = serializers.StringRelatedField(many=True)
+
+    class Meta:
+            model = Car
+            fields = "__all__"
+
+class CarListSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model = Car
+        fields = ["id", "make", "model", "price_per_day", "is_available"]
