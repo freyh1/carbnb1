@@ -7,7 +7,7 @@ from django.urls import include, path, re_path
 from django.views.generic import TemplateView
 from rest_framework import routers
 
-from api.views import UserViewSet, contact, CarViewSet
+from api.views import UserViewSet, contact, CarViewSet, home, signup, login, logout
 
 router = routers.DefaultRouter()
 
@@ -16,6 +16,10 @@ router.register("cars", CarViewSet)
 
 urlpatterns = (
     [
+        path('', home, name='home'),
+        path('signup/', signup, name='signup'),
+        path('login/', login, name='login'),
+        path('logout/', logout, name='logout'),
         path('admin/', admin.site.urls),
         path('api/', include(router.urls)),
         path('api/contact/', contact),

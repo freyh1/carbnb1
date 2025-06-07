@@ -45,26 +45,6 @@ services:
         depends_on:
             - db
 
-    frontend:
-        container_name: frontend
-        image: frontend
-        logging:
-            driver: "json-file"
-            options:
-                max-size: "10m"
-                max-file: "10"
-        command: npm run start
-        restart: always
-        build:
-            context: ./frontend
-        env_file:
-            - ./frontend/.env
-        volumes:
-            - ./frontend:/app
-        ports:
-            - 3000:3000
-        depends_on:
-            - backend
 
 volumes:
     postgres_data:
