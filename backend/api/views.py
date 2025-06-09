@@ -61,9 +61,9 @@ class CarViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
-    @action(detail=False, methods=["get"], permission_classes=[AllowAny])
+    @action(detail=False, methods=["get"], permission_classes=[IsAuthenticated])
     def mine(self, request):
-        cars = self.queryset.all()  #filter(owner=request.user)
+        cars = self.queryset.filter(owner=request.user)
         serializer = self.get_serializer(cars, many=True)
         return Response(serializer.data)
     
@@ -73,9 +73,6 @@ class CarViewSet(viewsets.ModelViewSet):
         elif self.action in ["mine", "list"]:
             return CarListSerializer
         return CarSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
 
 
 def home(request):
