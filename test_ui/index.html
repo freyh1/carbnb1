@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Carbnb Home</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #ddd; }
+    header a { margin-right: 15px; text-decoration: none; color: #333; }
+    .hero { text-align: center; padding: 60px 20px; background: #f5f5f5; }
+    .search-bar input { padding: 10px; margin: 5px; }
+    .search-bar button { padding: 10px 15px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div><a href="index.html" style="font-weight: bold; font-size: 20px;">Carbnb</a></div>
+    <nav>
+      <span id="auth-links"></span>
+    </nav>
+  </header>
+  <section class="hero">
+    <h1>Find your perfect ride</h1>
+    <div class="search-bar">
+      <input type="text" placeholder="Location" />
+      <input type="date" />
+      <input type="date" />
+      <button>Search</button>
+    </div>
+  </section>
+  <script src="header.js"></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register</title>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html">Home</a> |
+      <span id="auth-links"></span>
+    </nav>
+  </header>
+  <h1>Register</h1>
+  <form id="signup-form">
+    <label>Username: <input type="text" name="username" required /></label><br />
+    <label>Email: <input type="email" name="email" required /></label><br />
+    <label>Password: <input type="password" name="password1" required /></label><br />
+    <label>Confirm Password: <input type="password" name="password2" required /></label><br />
+    <button type="submit">Sign Up</button>
+  </form>
+  <p id="signup-error" style="color:red"></p>
+  <script src="header.js"></script>
+  <script>
+    document.getElementById('signup-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData.entries());
+      try {
+        const response = await fetch('http://localhost:8000/api/auth/registration/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await response.json();
+        if (response.ok && result.key) {
+          localStorage.setItem('access_token', result.key);
+          window.location.href = 'my-cars.html';
+        } else {
+          document.getElementById('signup-error').innerText = 'Signup failed';
+        }
+      } catch (err) {
+        document.getElementById('signup-error').innerText = 'Network error';
+      }
+    });
+  </script>
+</body>
+</html>

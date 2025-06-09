@@ -2,9 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Create Car Listing</title>
+<title>Create Car Listing</title>
 </head>
 <body>
+  <header>
+    <nav>
+      <a href="index.html">Home</a> |
+      <a href="create-car.html">Create Car</a> |
+      <span id="auth-links"></span>
+    </nav>
+  </header>
   <h1>Create a New Car Listing</h1>
   <form id="car-form">
     <label>Make: <input type="text" name="make" required /></label><br />
@@ -84,5 +91,6 @@
       }
     });
   </script>
+  <script src="header.js"></script>
 </body>
 </html>
