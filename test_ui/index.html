@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CarBnB</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin:0; padding:0; }
+    header { display:flex; justify-content:space-between; align-items:center; padding:10px 20px; background:#fff; border-bottom:1px solid #ccc; }
+    nav#auth-links a { margin-left: 10px; }
+    .hero { text-align:center; padding:50px 20px; background:#f7f7f7; }
+    .search-bar input { padding:10px; margin:5px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>CarBnB</h1>
+    <nav id="auth-links"></nav>
+  </header>
+
+  <section class="hero">
+    <h2>Find your next rental car</h2>
+    <div class="search-bar">
+      <input type="text" placeholder="Where are you going?" />
+      <input type="date" />
+      <input type="date" />
+      <button>Search</button>
+    </div>
+  </section>
+
+  <script src="header.js"></script>
+</body>
+</html>
