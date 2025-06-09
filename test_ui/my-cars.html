@@ -22,7 +22,8 @@
         const response = await fetch("http://localhost:8000/api/cars/mine/", {
           method: "GET",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + localStorage.getItem("access_token"),
           },
         });
 
@@ -35,7 +36,7 @@
         // For each car in the response, create a list item
         cars.forEach(car => {
           const li = document.createElement("li");
-          li.innerHTML = `<strong>${car.make} ${car.model}</strong> - $${car.pricePerDay}/day`;
+          li.innerHTML = `<strong>${car.make} ${car.model}</strong> - $${car.price_per_day}/day`;
           list.appendChild(li);
         });
 

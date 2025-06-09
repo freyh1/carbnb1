@@ -18,7 +18,7 @@
     <label>Year: <input type="number" name="year" required /></label><br />
     <label>Description: <textarea name="description" required></textarea></label><br />
     <label>Seats: <input type="number" name="seats" required /></label><br />
-    <label>Price/Day: <input type="number" step="0.01" name="pricePerDay" required /></label><br />
+    <label>Price/Day: <input type="number" step="0.01" name="price_per_day" required /></label><br />
     <label>Location ID: <input type="number" name="location" required /></label><br />
     <label>Transmission:
       <select name="transmission">
@@ -27,7 +27,7 @@
       </select>
     </label><br />
     <label>Car Type:
-      <select name="carType">
+      <select name="car_type">
         <option value="sedan">Sedan</option>
         <option value="suv">SUV</option>
         <option value="minivan">Minivan</option>
@@ -40,7 +40,7 @@
       </select>
     </label><br />
     <label>Fuel Type:
-      <select name="fuelType">
+      <select name="fuel_type">
         <option value="petrol">Petrol</option>
         <option value="diesel">Diesel</option>
         <option value="hybrid">Hybrid</option>
@@ -62,7 +62,7 @@
       // Convert number fields
       carData.year = parseInt(carData.year);
       carData.seats = parseInt(carData.seats);
-      carData.pricePerDay = parseFloat(carData.pricePerDay);
+      carData.price_per_day = parseFloat(carData.price_per_day);
       carData.location = parseInt(carData.location);
 
       try {

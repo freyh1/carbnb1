@@ -58,3 +58,6 @@ web/backend/static/
 static
 media
 __pycache__
+
+# development database
+backend/db.sqlite3
