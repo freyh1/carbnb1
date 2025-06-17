@@ -1,18 +1,12 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Car Listings</title>
-</head>
-<body>
-  <header>
-    <nav id="auth-links"></nav>
-  </header>
+
+{% block title %}Car Listings{% endblock %}
+
+{% block content %}
   <h1>All Car Listings</h1>
   <ul id="car-list"></ul>
 
-  <script src="{% static 'header.js' %}"></script>
   <script>
     async function loadCars() {
       const resp = await fetch('/api/cars/');
@@ -27,5 +21,4 @@
     }
     loadCars();
   </script>
-</body>
-</html>
+{% endblock %}

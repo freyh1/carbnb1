@@ -1,17 +1,9 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-<title>Create Car Listing</title>
-</head>
-<body>
-  <header>
-    <nav>
-      <a href="create-car.html">Create Car</a> |
-      <span id="auth-links"></span>
-    </nav>
-  </header>
+
+{% block title %}Create Car Listing{% endblock %}
+
+{% block content %}
   <h1>Create a New Car Listing</h1>
   <form id="car-form">
     <label>Make: <input type="text" name="make" required /></label><br />
@@ -91,6 +83,4 @@
       }
     });
   </script>
-  <script src="{% static 'header.js' %}"></script>
-</body>
-</html>
+{% endblock %}
