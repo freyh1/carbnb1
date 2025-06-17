@@ -1,17 +1,9 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-<title>Create Car Listing</title>
-</head>
-<body>
-  <header>
-    <nav>
-      <a href="create-car.html">Create Car</a> |
-      <span id="auth-links"></span>
-    </nav>
-  </header>
+
+{% block title %}Create Car Listing{% endblock %}
+
+{% block content %}
   <h1>Create a New Car Listing</h1>
   <form id="car-form">
     <label>Make: <input type="text" name="make" required /></label><br />
@@ -50,47 +42,39 @@
     </label><br />
     <button type="submit">Create Listing</button>
   </form>
-
   <p id="response"></p>
+{% endblock %}
 
+{% block extra_js %}
   <script>
     document.getElementById('car-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-
       const formData = new FormData(e.target);
       const carData = Object.fromEntries(formData.entries());
-
-      // Convert number fields
       carData.year = parseInt(carData.year);
       carData.seats = parseInt(carData.seats);
       carData.price_per_day = parseFloat(carData.price_per_day);
       carData.location = parseInt(carData.location);
-
       try {
         const response = await fetch('http://localhost:8000/api/cars/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + localStorage.getItem('access_token'), // assuming token is stored
+            'Authorization': 'Bearer ' + localStorage.getItem('access_token'),
           },
           body: JSON.stringify(carData),
         });
-
         const result = await response.json();
         document.getElementById('response').innerText = JSON.stringify(result, null, 2);
-
         if (response.ok) {
           alert('Car listing created successfully!');
         } else {
           alert('Error: ' + JSON.stringify(result));
         }
-
       } catch (err) {
         console.error('Error creating car:', err);
         alert('Network error or server issue.');
       }
     });
   </script>
-  <script src="{% static 'header.js' %}"></script>
-</body>
-</html>
+{% endblock %}

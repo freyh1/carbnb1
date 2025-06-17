@@ -1,54 +1,36 @@
-<!DOCTYPE html>
+{% extends 'base.html' %}
 {% load static %}
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-<title>My Car Listings</title>
-</head>
-<body>
-  <header>
-    <nav>
-      <a href="create-car.html">Create Car</a> |
-      <span id="auth-links"></span>
-    </nav>
-  </header>
+
+{% block title %}My Car Listings{% endblock %}
+
+{% block content %}
+  <nav><a href="create-car.html">Create Car</a></nav>
   <h1>Your Car Listings</h1>
   <ul id="car-list"></ul>
+{% endblock %}
 
+{% block extra_js %}
   <script>
-    // This function runs as soon as the page loads
     async function loadMyCars() {
       try {
-        // Send GET request to the backend API
-        const response = await fetch("http://localhost:8000/api/cars/mine/", {
-          method: "GET",
+        const response = await fetch('http://localhost:8000/api/cars/mine/', {
+          method: 'GET',
           headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + localStorage.getItem("access_token"),
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('access_token'),
           },
         });
-
-        // Convert the response to JSON
         const cars = await response.json();
-
-        // Find the <ul> element where we’ll add the cars
-        const list = document.getElementById("car-list");
-
-        // For each car in the response, create a list item
+        const list = document.getElementById('car-list');
         cars.forEach(car => {
-          const li = document.createElement("li");
+          const li = document.createElement('li');
           li.innerHTML = `<strong>${car.make} ${car.model}</strong> - $${car.price_per_day}/day`;
           list.appendChild(li);
         });
-
       } catch (error) {
-        console.error("Error fetching cars:", error);
+        console.error('Error fetching cars:', error);
       }
     }
-
-    // Call the function to load the cars
     loadMyCars();
   </script>
-  <script src="{% static 'header.js' %}"></script>
-</body>
-</html>
+{% endblock %}

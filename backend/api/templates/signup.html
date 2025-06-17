@@ -1,14 +1,9 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Register</title>
-</head>
-<body>
-  <header>
-    <nav id="auth-links"></nav>
-  </header>
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
   <h1>Register</h1>
   <form id="signup-form">
     {% csrf_token %}
@@ -19,13 +14,15 @@
     <button type="submit">Sign Up</button>
   </form>
   <p id="signup-error" style="color:red"></p>
-  <script src="{% static 'header.js' %}"></script>
+{% endblock %}
+
+{% block extra_js %}
   <script>
     document.getElementById('signup-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const formData = new FormData(e.target);
       const data = Object.fromEntries(formData.entries());
-      const csrf_token = formData.get("csrfmiddlewaretoken");
+      const csrf_token = formData.get('csrfmiddlewaretoken');
       try {
         const response = await fetch('http://localhost:8000/api/auth/registration/', {
           method: 'POST',
@@ -44,5 +41,4 @@
       }
     });
   </script>
-</body>
-</html>
+{% endblock %}

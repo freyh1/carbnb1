@@ -1,9 +1,9 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>CarBnB</title>
+
+{% block title %}CarBnB{% endblock %}
+
+{% block extra_head %}
   <style>
     body { font-family: Arial, sans-serif; margin:0; padding:0; }
     header {
@@ -41,19 +41,20 @@
     }
     .hero-search input { padding:8px; margin:0 5px; }
   </style>
-</head>
-<body>
-  <header>
-    <div class="logo"><a href="index.html">CarBnB</a></div>
-    <div class="header-search">
-      <input type="text" placeholder="Where to?" />
-      <input type="date" />
-      <input type="date" />
-      <button>Search</button>
-    </div>
-    <nav id="auth-links"></nav>
-  </header>
+{% endblock %}
 
+{% block header %}
+  <div class="logo"><a href="index.html">CarBnB</a></div>
+  <div class="header-search">
+    <input type="text" placeholder="Where to?" />
+    <input type="date" />
+    <input type="date" />
+    <button>Search</button>
+  </div>
+  <nav id="auth-links"></nav>
+{% endblock %}
+
+{% block content %}
   <section class="hero">
     <h2>Find your next rental car</h2>
     <div class="hero-search">
@@ -63,7 +64,4 @@
       <button>Search</button>
     </div>
   </section>
-
-  <script src="{% static 'header.js' %}"></script>
-</body>
-</html>
+{% endblock %}
