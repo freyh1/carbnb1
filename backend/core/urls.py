@@ -25,17 +25,17 @@ urlpatterns = (
         path('api/contact/', contact),
 
         # Path used to build our password reset link.
-        path(
-            "password-reset/confirm/<uidb64>/<token>/",
-            TemplateView.as_view(template_name="password_reset_confirm.html"),
-            name='password_reset_confirm'
-        ),
+        # path(
+        #     "password-reset/confirm/<uidb64>/<token>/",
+        #     TemplateView.as_view(template_name="password_reset_confirm.html"),
+        #     name='password_reset_confirm'
+        # ),
 
         path('api/auth/', include("dj_rest_auth.urls")),
-        path(
-            'api/auth/registration/',
-            include('dj_rest_auth.registration.urls')
-        ),
+        # path(
+        #     'api/auth/registration/',
+        #     include('dj_rest_auth.registration.urls')
+        # ),
 
 
         path(
@@ -54,5 +54,6 @@ urlpatterns = (
 
     ]
     + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    + static(settings.STATIC_URL, document_root=settings.BASE_DIR / "static")
+
 )

@@ -17,8 +17,12 @@ FRONTEND_HOST = os.environ.get("FRONTEND_HOST")
 MEDIA_ROOT = 'media/'
 MEDIA_URL = '/media/'
 
-STATIC_ROOT = 'static/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",  # For your custom static files (JS, CSS, images)
+]
 
 # Application definition
 INSTALLED_APPS = [
