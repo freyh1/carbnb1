@@ -31,7 +31,8 @@
           body: JSON.stringify(data)
         });
         const result = await response.json();
-        if (response.ok) {
+        if (response.ok && result.key) {
+          localStorage.setItem('access_token', result.key);
           window.location.href = '{% url "home" %}';
         } else {
           document.getElementById('login-error').innerText = 'Login failed';
