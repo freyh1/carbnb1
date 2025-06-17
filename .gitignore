@@ -56,7 +56,9 @@ web/backend/static/
 **/public/worker-*.js.map
 
 static
+!backend/static/
 media
+!backend/static/header.js
 __pycache__
 
 # development database

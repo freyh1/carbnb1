@@ -58,6 +58,13 @@ def contact(request):
 class CarViewSet(viewsets.ModelViewSet):
     queryset = Car.objects.all()
 
+    def get_permissions(self):
+        if self.action in ["list", "retrieve"]:
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
+
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
@@ -66,7 +73,7 @@ class CarViewSet(viewsets.ModelViewSet):
         cars = self.queryset.filter(owner=request.user)
         serializer = self.get_serializer(cars, many=True)
         return Response(serializer.data)
-    
+
     def get_serializer_class(self):
         if self.action == "retrieve":
             return CarDetailSerializer
