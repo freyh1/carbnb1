@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Car Detail{% endblock %}
+
+{% block content %}
+  <h1>Car Detail</h1>
+  <div id="car-info"></div>
+  <a id="book-link" href="{% url 'book_car' car_id=car_id %}" style="display:none;">Book this car</a>
+
+  <script>
+    async function loadCar() {
+      const resp = await fetch('/api/cars/{{ car_id }}/');
+      const car = await resp.json();
+      const div = document.getElementById('car-info');
+      div.innerHTML = `
+        <h2>${car.make} ${car.model}</h2>
+        <p>${car.description}</p>
+        <p>Year: ${car.year}</p>
+        <p>Seats: ${car.seats}</p>
+        <p>Price per day: $${car.price_per_day}</p>
+      `;
+
+      const userLoggedIn = {{ user.is_authenticated|yesno:'true,false' }};
+      const currentUserId = {% if user.is_authenticated %}{{ user.id }}{% else %}null{% endif %};
+      if (userLoggedIn && car.is_available && car.owner.id !== currentUserId) {
+        document.getElementById('book-link').style.display = 'block';
+      }
+    }
+    loadCar();
+  </script>
+{% endblock %}

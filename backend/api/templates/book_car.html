@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Book Car{% endblock %}
+
+{% block content %}
+  <h1>Book Car</h1>
+  <div id="car-info"></div>
+  <form id="booking-form">
+    {% csrf_token %}
+    <label>Start date: <input type="date" name="start_date" required></label><br>
+    <label>End date: <input type="date" name="end_date" required></label><br>
+    <button type="submit">Book</button>
+  </form>
+  <p id="error" style="color:red"></p>
+
+  <script>
+    async function loadCar() {
+      const resp = await fetch('/api/cars/{{ car_id }}/');
+      const car = await resp.json();
+      document.getElementById('car-info').textContent = `${car.make} ${car.model} - $${car.price_per_day}/day`;
+    }
+
+    loadCar();
+
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    document.getElementById('booking-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData.entries());
+      try {
+        const resp = await fetch('/api/cars/{{ car_id }}/book/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+          },
+          body: JSON.stringify(data),
+          credentials: 'include'
+        });
+        const result = await resp.json();
+        if (resp.ok) {
+          alert('Booking created!');
+          window.location.href = '{% url "car_detail" car_id=car_id %}';
+        } else {
+          document.getElementById('error').innerText = result.detail || 'Error';
+        }
+      } catch(err) {
+        document.getElementById('error').innerText = 'Network error';
+      }
+    });
+  </script>
+{% endblock %}
