@@ -12,7 +12,6 @@
     <label>Description: <textarea name="description" required></textarea></label><br />
     <label>Seats: <input type="number" name="seats" required /></label><br />
     <label>Price/Day: <input type="number" step="0.01" name="price_per_day" required /></label><br />
-    <label>Location ID: <input type="number" name="location" required /></label><br />
     <label>Transmission:
       <select name="transmission">
         <option value="automatic">Automatic</option>
@@ -43,7 +42,7 @@
     <button type="submit">Create Listing</button>
   </form>
 
-  <p id="response"></p>
+  <p id="response" style="white-space: pre-wrap; color: green;"></p>
 
   <script>
     document.getElementById('car-form').addEventListener('submit', async (e) => {
@@ -56,16 +55,32 @@
       carData.year = parseInt(carData.year);
       carData.seats = parseInt(carData.seats);
       carData.price_per_day = parseFloat(carData.price_per_day);
-      carData.location = parseInt(carData.location);
+
+      function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
 
       try {
-        const response = await fetch('http://localhost:8000/api/cars/', {
+        const response = await fetch('/api/cars/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + localStorage.getItem('access_token'), // assuming token is stored
+            'X-CSRFToken': getCookie('csrftoken')
           },
           body: JSON.stringify(carData),
+          credentials: 'include'
         });
 
         const result = await response.json();
@@ -73,8 +88,9 @@
 
         if (response.ok) {
           alert('Car listing created successfully!');
+          window.location.href = "{% url 'home' %}";
         } else {
-          alert('Error: ' + JSON.stringify(result));
+          alert('Error: ' + (result.detail || JSON.stringify(result)));
         }
 
       } catch (err) {

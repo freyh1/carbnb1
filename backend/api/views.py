@@ -1,5 +1,5 @@
 from smtplib import SMTPException
-
+from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
@@ -113,3 +113,11 @@ def login(request):
 def logout(request):
     auth_logout(request)
     return redirect("home")
+
+@login_required
+def my_car_listings(request):
+    return render(request, "my_cars.html")
+
+@login_required
+def create_car(request):
+    return render(request, "create_car.html")

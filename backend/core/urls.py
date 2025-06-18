@@ -7,7 +7,7 @@ from django.urls import include, path, re_path
 from django.views.generic import TemplateView
 from rest_framework import routers
 
-from api.views import UserViewSet, contact, CarViewSet, home, signup, login, logout
+from api.views import UserViewSet, contact, CarViewSet, home, signup, login, logout, my_car_listings, create_car
 
 router = routers.DefaultRouter()
 
@@ -23,6 +23,8 @@ urlpatterns = (
         path('admin/', admin.site.urls),
         path('api/', include(router.urls)),
         path('api/contact/', contact),
+        path('my-cars', my_car_listings, name='my_car_listings'),
+        path('create-car', create_car, name='create_car'),
 
         # Path used to build our password reset link.
         # path(

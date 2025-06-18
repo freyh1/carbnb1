@@ -1,5 +1,7 @@
+from datetime import time, date
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.forms import ValidationError
 
 
 class User(AbstractUser):
@@ -46,14 +48,19 @@ class Location(models.Model):
     def __str__(self):
         return f"{self.address}, {self.city}"
 
+def validate_year(value):
+    if value < 1900 or value > time.localtime().tm_year + 1:
+        raise ValidationError(
+            f"Year must be between 1900 and {time.localtime().tm_year + 1}."
+        )
 
 class Car(models.Model):
     description = models.TextField()
     make = models.CharField(max_length=50)
     model = models.CharField(max_length=50)
-    year = models.PositiveBigIntegerField()
+    year = models.PositiveBigIntegerField(validators=[validate_year])
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="cars")
-    seats = models.IntegerField()
+    seats = models.PositiveIntegerField(max_length=2)
     price_per_day = models.DecimalField(max_digits=8, decimal_places=2)
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True)
     transmission = models.CharField(max_length=10, choices=TRANSMISSION_CHOICES)
@@ -64,6 +71,13 @@ class Car(models.Model):
 
     def __str__(self):
         return f"{self.make} {self.model} ({self.year})"
+    
+    def is_available_during(self, start_date: date, end_date: date) -> bool:
+        """Check if the car is available between the given dates."""
+        return not self.bookings.filter(
+            start_date__lt=end_date,
+            end_date__gt=start_date
+        ).exists()
 
 class CarImage(models.Model):
     car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name="images")

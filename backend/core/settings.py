@@ -87,23 +87,21 @@ TEMPLATES = [
     },
 ]
 
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=500) if DEBUG else timedelta(minutes=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'UPDATE_LAST_LOGIN': True,
-    "USER_ID_FIELD": "id",
-    "USER_ID_CLAIM": "id",
-    "SIGNING_KEY": os.environ.get("JWT_SECRET_KEY"),
-}
+# SIMPLE_JWT = {
+#     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=500) if DEBUG else timedelta(minutes=5),
+#     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+#     'ROTATE_REFRESH_TOKENS': True,
+#     'BLACKLIST_AFTER_ROTATION': True,
+#     'UPDATE_LAST_LOGIN': True,
+#     "USER_ID_FIELD": "id",
+#     "USER_ID_CLAIM": "id",
+#     "SIGNING_KEY": os.environ.get("JWT_SECRET_KEY"),
+# }
 
 AUTH_USER_MODEL = "api.User"
 
 REST_AUTH = {
-    'USE_JWT': True,
-    'JWT_AUTH_RETURN_EXPIRATION': True,
-    'JWT_AUTH_COOKIE': "jwt_auth",
+    'USE_JWT': False,
     'USER_DETAILS_SERIALIZER': 'api.serializers.UserSerializer',
     'PASSWORD_RESET_SERIALIZER': 'api.serializers.PasswordResetSerializer',
 }
@@ -114,7 +112,7 @@ REST_FRAMEWORK = {
     ),
 
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ),
 
     'DEFAULT_RENDERER_CLASSES': (
