@@ -15,7 +15,7 @@
       list.innerHTML = '';
       cars.forEach(car => {
         const li = document.createElement('li');
-        li.textContent = `${car.make} ${car.model} - $${car.price_per_day}/day`;
+        li.innerHTML = `<a href="/cars/${car.id}/">${car.make} ${car.model} - $${car.price_per_day}/day</a>`;
         list.appendChild(li);
       });
     }

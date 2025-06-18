@@ -10,9 +10,17 @@ from rest_framework import mixins, viewsets, generics
 from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from api.models import User, Car
+from datetime import datetime
+from api.models import User, Car, Booking
 from api.permissions import UserPermission
-from api.serializers import ContactFormSerializer, UserSerializer, CarSerializer, CarDetailSerializer, CarListSerializer
+from api.serializers import (
+    ContactFormSerializer,
+    UserSerializer,
+    CarSerializer,
+    CarDetailSerializer,
+    CarListSerializer,
+    BookingSerializer,
+)
 
 
 
@@ -58,6 +66,12 @@ def contact(request):
 class CarViewSet(viewsets.ModelViewSet):
     queryset = Car.objects.all()
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self.action == "list" and self.request.user.is_authenticated:
+            qs = qs.exclude(owner=self.request.user)
+        return qs
+
     def get_permissions(self):
         if self.action in ["list", "retrieve"]:
             permission_classes = [AllowAny]
@@ -67,6 +81,46 @@ class CarViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+    @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
+    def book(self, request, pk=None):
+        car = self.get_object()
+        user = request.user
+
+        if car.owner == user:
+            return Response({"detail": "You cannot book your own car."}, status=400)
+
+        start_date_str = request.data.get("start_date")
+        end_date_str = request.data.get("end_date")
+
+        if not start_date_str or not end_date_str:
+            return Response({"detail": "start_date and end_date are required."}, status=400)
+
+        try:
+            start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+            end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+        except ValueError:
+            return Response({"detail": "Invalid date format. Use YYYY-MM-DD."}, status=400)
+
+        if end_date <= start_date:
+            return Response({"detail": "End date must be after start date."}, status=400)
+
+        if not car.is_available_during(start_date, end_date):
+            return Response({"detail": "Car is not available during this period."}, status=400)
+
+        days = (end_date - start_date).days
+        total_price = days * car.price_per_day
+
+        booking = Booking.objects.create(
+            user=user,
+            car=car,
+            start_date=start_date,
+            end_date=end_date,
+            total_price=total_price,
+        )
+
+        serializer = BookingSerializer(booking)
+        return Response(serializer.data, status=201)
 
     @action(detail=False, methods=["get"], permission_classes=[IsAuthenticated])
     def mine(self, request):
@@ -121,3 +175,13 @@ def my_car_listings(request):
 @login_required
 def create_car(request):
     return render(request, "create_car.html")
+
+
+def car_detail(request, car_id: int):
+    return render(request, "car_detail.html", {"car_id": car_id})
+
+
+@login_required
+def book_car(request, car_id: int):
+    return render(request, "book_car.html", {"car_id": car_id})
+

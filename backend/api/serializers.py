@@ -4,7 +4,7 @@ from dj_rest_auth.serializers import (
 from django.conf import settings
 from rest_framework import serializers
 
-from api.models import User, Car
+from api.models import User, Car, Booking
 from api.utils import password_reset_url_generator
 
 
@@ -66,6 +66,14 @@ class CarDetailSerializer(serializers.ModelSerializer):
             fields = "__all__"
 
 class CarListSerializer(serializers.ModelSerializer):
-    class Meta: 
+    class Meta:
         model = Car
         fields = ["id", "make", "model", "price_per_day", "is_available"]
+
+
+class BookingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Booking
+        fields = "__all__"
+        read_only_fields = ["user", "car", "total_price", "created_at", "is_confirmed"]
+
