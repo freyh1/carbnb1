@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  {% load static %}
   <title>{% block title %}Carbnb{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'styles.css' %}">
+  <link rel="icon" href="{% static 'favicon.ico' %}">
 </head>
 <body>
   <header>

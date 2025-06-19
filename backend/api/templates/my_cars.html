@@ -10,10 +10,8 @@
   <a href="{% url 'create_car' %}">Add a new listing</a>
 
   <script>
-    // This function runs as soon as the page loads
     async function loadMyCars() {
       try {
-        // Send GET request to the backend API
         const response = await fetch("http://localhost:8000/api/cars/mine/", {
           method: "GET",
           headers: {
@@ -21,26 +19,82 @@
             "Authorization": "Bearer " + localStorage.getItem("access_token"),
           },
         });
-
-        // Convert the response to JSON
+  
         const cars = await response.json();
-
-        // Find the <ul> element where we’ll add the cars
         const list = document.getElementById("car-list");
-
-        // For each car in the response, create a list item
-        cars.forEach(car => {
+  
+        for (const car of cars) {
           const li = document.createElement("li");
           li.innerHTML = `<strong>${car.make} ${car.model}</strong> - $${car.price_per_day}/day`;
+  
+          const bookingsDiv = document.createElement("div");
+          bookingsDiv.innerHTML = "<em>Loading bookings...</em>";
+          li.appendChild(bookingsDiv);
           list.appendChild(li);
-        });
-
+  
+          const bookingsResp = await fetch(`http://localhost:8000/api/cars/${car.id}/bookings/`, {
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer " + localStorage.getItem("access_token"),
+            }
+          });
+  
+          const bookings = await bookingsResp.json();
+  
+          if (bookings.length === 0) {
+            bookingsDiv.innerHTML = "<p>No bookings yet.</p>";
+          } else {
+            bookingsDiv.innerHTML = "<ul>" + bookings.map(b => `
+              <li>
+                <strong>${b.user.username}</strong><br>
+                ${b.start_date} → ${b.end_date}<br>
+                Total: $${b.total_price}<br>
+                Status: ${b.is_confirmed ? "✅ Confirmed" : "⏳ Pending"}
+                ${!b.is_confirmed ? `
+                  <br>
+                  <button onclick="confirmBooking(${b.id})">Accept</button>
+                  <button onclick="rejectBooking(${b.id})">Reject</button>
+                ` : ""}
+              </li>
+            `).join("") + "</ul>";
+          }
+        }
+  
       } catch (error) {
-        console.error("Error fetching cars:", error);
+        console.error("Error fetching cars or bookings:", error);
       }
     }
-
-    // Call the function to load the cars
+  
+    async function confirmBooking(id) {
+      await fetch(`http://localhost:8000/api/bookings/${id}/confirm/`, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"),
+          "Content-Type": "application/json"
+        },
+        credentials: "include"
+      });
+      loadMyCars(); // reload
+    }
+  
+    async function rejectBooking(id) {
+      await fetch(`http://localhost:8000/api/bookings/${id}/reject/`, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"),
+          "Content-Type": "application/json"
+        },
+        credentials: "include"
+      });
+      loadMyCars(); // reload
+    }
+  
+    function getCookie(name) {
+      const cookie = document.cookie.split('; ').find(row => row.startsWith(name + '='));
+      return cookie ? decodeURIComponent(cookie.split('=')[1]) : null;
+    }
+  
     loadMyCars();
   </script>
+  
 {% endblock %}

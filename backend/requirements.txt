@@ -10,3 +10,4 @@ djangorestframework-camel-case
 Pillow
 uvicorn[standard]
 requests
+django-filter

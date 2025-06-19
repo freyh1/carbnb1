@@ -28,8 +28,8 @@
           const carLink = `<a href="/cars/${booking.car.id}/">${booking.car.make} ${booking.car.model}</a>`;
 
           li.innerHTML = `
-            <strong>${carLink}</strong> - Total price: $${booking.total_price}<br>
-            Start date: ${booking.start_date} - End date: ${booking.end_date}
+            <strong>${carLink}</strong> - Total price: $${booking.totalPrice}<br>
+            Start date: ${booking.startDate} - End date: ${booking.endDate}
           `;
 
           list.appendChild(li);

@@ -4,12 +4,11 @@ from django.conf.urls import include
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
-from django.views.generic import TemplateView
 from rest_framework import routers
 
 from api.views import (
+    BookingViewSet,
     UserViewSet,
-    contact,
     CarViewSet,
     home,
     my_bookings,
@@ -21,12 +20,14 @@ from api.views import (
     create_car,
     car_detail,
     book_car,
+    contact,
 )
 
 router = routers.DefaultRouter()
 
 router.register(r"users", UserViewSet, basename="user")
-router.register("cars", CarViewSet)
+router.register("cars", CarViewSet, basename="car")
+router.register("bookings", BookingViewSet, basename="booking")
 
 urlpatterns = (
     [

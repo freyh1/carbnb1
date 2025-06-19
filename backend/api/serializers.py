@@ -80,13 +80,8 @@ class CarListSerializer(serializers.ModelSerializer):
 
 
 class BookingSerializer(serializers.ModelSerializer):
+    car = CarListSerializer(read_only=True)
     class Meta:
         model = Booking
         fields = "__all__"
         read_only_fields = ["user", "car", "total_price", "created_at", "is_confirmed"]
-
-    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
-    def mine(self, request):
-        bookings = self.queryset.filter(user = request.user)
-        serializer = self.get_serializer(bookings, many=True)
-        return Response(serializer.data)

@@ -1,7 +1,9 @@
 from smtplib import SMTPException
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
-from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.shortcuts import render, redirect
 from django.core.mail import send_mail
@@ -65,6 +67,17 @@ def contact(request):
 
 class CarViewSet(viewsets.ModelViewSet):
     queryset = Car.objects.all()
+
+    @action(detail=True, methods=["get"], permission_classes=[IsAuthenticated])
+    def bookings(self, request, pk=None):
+        car = self.get_object()
+
+        if car.owner != request.user:
+            return Response({"detail": "Not allowed."}, status=403)
+
+        bookings = car.bookings.all()
+        serializer = BookingSerializer(bookings, many=True)
+        return Response(serializer.data)
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -134,6 +147,11 @@ class CarViewSet(viewsets.ModelViewSet):
         elif self.action in ["mine", "list"]:
             return CarListSerializer
         return CarSerializer
+    
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['car_type', 'fuel_type', 'transmission', 'seats', 'price_per_day']
+    search_fields = ['make', 'model', 'description']
+    ordering_fields = ['price_per_day', 'year']
 
 
 def home(request):
@@ -192,3 +210,34 @@ def my_bookings(request):
 @login_required
 def profile(request):
     return render(request, "profile.html")
+
+class BookingViewSet(viewsets.ModelViewSet):
+    queryset = Booking.objects.all()
+    serializer_class = BookingSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def mine(self, request):
+        bookings = Booking.objects.filter(user=request.user)
+        serializer = self.get_serializer(bookings, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
+    def confirm(self, request, pk=None):
+        booking = self.get_object()
+        if booking.car.owner != request.user:
+            return Response({"detail": "Not allowed."}, status=403)
+        booking.is_confirmed = True
+        booking.save()
+        return Response({"status": "confirmed"})
+
+    @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
+    def reject(self, request, pk=None):
+        booking = self.get_object()
+        if booking.car.owner != request.user:
+            return Response({"detail": "Not allowed."}, status=403)
+        booking.delete()
+        return Response({"status": "rejected"})
