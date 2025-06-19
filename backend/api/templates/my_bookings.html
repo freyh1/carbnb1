@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Car Bookings{% endblock %}
+
+{% block content %}
+  <h1>Your Bookings</h1>
+  <ul id="booking-list"></ul>
+
+  <script>
+    async function loadMyCars() {
+      try {
+        const response = await fetch("http://localhost:8000/api/bookings/mine/", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + localStorage.getItem("access_token"),
+          },
+        });
+
+        const bookings = await response.json();
+        const list = document.getElementById("booking-list");
+
+        bookings.forEach(booking => {
+          const li = document.createElement("li");
+
+          // Link to the car detail page (assuming URL is /cars/<car_id>/)
+          const carLink = `<a href="/cars/${booking.car.id}/">${booking.car.make} ${booking.car.model}</a>`;
+
+          li.innerHTML = `
+            <strong>${carLink}</strong> - Total price: $${booking.total_price}<br>
+            Start date: ${booking.start_date} - End date: ${booking.end_date}
+          `;
+
+          list.appendChild(li);
+        });
+
+      } catch (error) {
+        console.error("Error fetching bookings:", error);
+      }
+    }
+
+    loadMyCars();
+  </script>
+{% endblock %}

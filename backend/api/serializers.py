@@ -6,6 +6,9 @@ from rest_framework import serializers
 
 from api.models import User, Car, Booking
 from api.utils import password_reset_url_generator
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -55,9 +58,14 @@ class CarSerializer(serializers.ModelSerializer):
         fields = "__all__"
         read_only_fields = ["owner"]
 
+class PublicUserSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model = User
+        fields = ["id", "username"]
+
 class CarDetailSerializer(serializers.ModelSerializer):
-    owner = UserSerializer(read_only = True)
-    location = serializers.StringRelatedField
+    owner = PublicUserSerializer(read_only = True)
+    location = serializers.StringRelatedField()
     images = serializers.StringRelatedField(many=True)
     reviews = serializers.StringRelatedField(many=True)
 
@@ -77,3 +85,8 @@ class BookingSerializer(serializers.ModelSerializer):
         fields = "__all__"
         read_only_fields = ["user", "car", "total_price", "created_at", "is_confirmed"]
 
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def mine(self, request):
+        bookings = self.queryset.filter(user = request.user)
+        serializer = self.get_serializer(bookings, many=True)
+        return Response(serializer.data)

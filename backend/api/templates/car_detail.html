@@ -13,17 +13,18 @@
       const resp = await fetch('/api/cars/{{ car_id }}/');
       const car = await resp.json();
       const div = document.getElementById('car-info');
+      console.log(car);
       div.innerHTML = `
         <h2>${car.make} ${car.model}</h2>
         <p>${car.description}</p>
         <p>Year: ${car.year}</p>
         <p>Seats: ${car.seats}</p>
-        <p>Price per day: $${car.price_per_day}</p>
+        <p>Price per day: ${car.pricePerDay}</p>
       `;
 
       const userLoggedIn = {{ user.is_authenticated|yesno:'true,false' }};
-      const currentUserId = {% if user.is_authenticated %}{{ user.id }}{% else %}null{% endif %};
-      if (userLoggedIn && car.is_available && car.owner.id !== currentUserId) {
+      const currentUserId = {% if user.is_authenticated %}Number({{ user.id }}){% else %}null{% endif %};
+           if (userLoggedIn && car.isAvailable && car.owner.id !== currentUserId) {
         document.getElementById('book-link').style.display = 'block';
       }
     }

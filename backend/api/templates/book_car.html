@@ -18,7 +18,7 @@
     async function loadCar() {
       const resp = await fetch('/api/cars/{{ car_id }}/');
       const car = await resp.json();
-      document.getElementById('car-info').textContent = `${car.make} ${car.model} - $${car.price_per_day}/day`;
+      document.getElementById('car-info').textContent = `${car.make} ${car.model} - ${car.pricePerDay}/day`;
     }
 
     loadCar();

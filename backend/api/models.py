@@ -1,4 +1,4 @@
-from datetime import time, date
+from datetime import datetime, date
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.forms import ValidationError
@@ -49,9 +49,10 @@ class Location(models.Model):
         return f"{self.address}, {self.city}"
 
 def validate_year(value):
-    if value < 1900 or value > time.localtime().tm_year + 1:
+    current_year = datetime.now().year
+    if value < 1900 or value > current_year + 1:
         raise ValidationError(
-            f"Year must be between 1900 and {time.localtime().tm_year + 1}."
+            f"Year must be between 1900 and {current_year + 1}."
         )
 
 class Car(models.Model):

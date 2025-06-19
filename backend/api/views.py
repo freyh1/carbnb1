@@ -185,3 +185,10 @@ def car_detail(request, car_id: int):
 def book_car(request, car_id: int):
     return render(request, "book_car.html", {"car_id": car_id})
 
+@login_required
+def my_bookings(request):
+    return render(request, "my_bookings.html")
+
+@login_required
+def profile(request):
+    return render(request, "profile.html")

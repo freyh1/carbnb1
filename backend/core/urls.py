@@ -12,6 +12,8 @@ from api.views import (
     contact,
     CarViewSet,
     home,
+    my_bookings,
+    profile,
     signup,
     login,
     logout,
@@ -39,6 +41,8 @@ urlpatterns = (
         path('create-car', create_car, name='create_car'),
         path('cars/<int:car_id>/', car_detail, name='car_detail'),
         path('cars/<int:car_id>/book/', book_car, name='book_car'),
+        path('my-bookings/', my_bookings, name='my_bookings'),
+        path('profile/', profile, name='profile'),
 
         # Path used to build our password reset link.
         # path(
@@ -48,10 +52,10 @@ urlpatterns = (
         # ),
 
         path('api/auth/', include("dj_rest_auth.urls")),
-        # path(
-        #     'api/auth/registration/',
-        #     include('dj_rest_auth.registration.urls')
-        # ),
+        path(
+            'api/auth/registration/',
+            include('dj_rest_auth.registration.urls')
+        ),
 
 
         path(
