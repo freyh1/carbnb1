@@ -11,6 +11,7 @@ from api.views import (
     UserViewSet,
     CarViewSet,
     CarImageViewSet,
+    ReviewViewSet,
     home,
     my_bookings,
     profile,
@@ -30,6 +31,7 @@ router.register(r"users", UserViewSet, basename="user")
 router.register("cars", CarViewSet, basename="car")
 router.register("bookings", BookingViewSet, basename="booking")
 router.register("car-images", CarImageViewSet, basename="car-image")
+router.register("reviews", ReviewViewSet, basename="review")
 
 urlpatterns = (
     [
