@@ -16,3 +16,27 @@ class UserPermission(permissions.BasePermission):
             if user.is_superuser or user == user_object:
                 return True
         return False
+
+
+class CarPermission(permissions.BasePermission):
+    """Only allow owners or superusers to modify cars."""
+
+    def has_object_permission(self, request, view, car):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return request.user.is_authenticated and (
+            request.user.is_superuser or car.owner == request.user
+        )
+
+
+class BookingPermission(permissions.BasePermission):
+    """Restrict updates and deletes to the booking user or car owner."""
+
+    def has_object_permission(self, request, view, booking):
+        if request.method in permissions.SAFE_METHODS:
+            return request.user.is_authenticated
+        return request.user.is_authenticated and (
+            request.user.is_superuser
+            or booking.user == request.user
+            or booking.car.owner == request.user
+        )
