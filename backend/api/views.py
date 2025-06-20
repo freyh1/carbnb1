@@ -14,7 +14,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from datetime import datetime
 from api.models import User, Car, Booking
-from api.permissions import UserPermission
+from api.permissions import UserPermission, CarPermission, BookingPermission
 from api.serializers import (
     ContactFormSerializer,
     UserSerializer,
@@ -89,7 +89,7 @@ class CarViewSet(viewsets.ModelViewSet):
         if self.action in ["list", "retrieve"]:
             permission_classes = [AllowAny]
         else:
-            permission_classes = [IsAuthenticated]
+            permission_classes = [IsAuthenticated, CarPermission]
         return [permission() for permission in permission_classes]
 
     def perform_create(self, serializer):
@@ -214,7 +214,7 @@ def profile(request):
 class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, BookingPermission]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
