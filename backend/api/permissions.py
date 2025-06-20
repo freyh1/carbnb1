@@ -51,3 +51,14 @@ class CarImagePermission(permissions.BasePermission):
         return request.user.is_authenticated and (
             request.user.is_superuser or car_image.car.owner == request.user
         )
+
+
+class ReviewPermission(permissions.BasePermission):
+    """Only allow authors or superusers to modify reviews."""
+
+    def has_object_permission(self, request, view, review):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return request.user.is_authenticated and (
+            request.user.is_superuser or review.user == request.user
+        )

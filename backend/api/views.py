@@ -13,8 +13,8 @@ from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from datetime import datetime
-from api.models import User, Car, Booking, CarImage
-from api.permissions import UserPermission, CarPermission, BookingPermission, CarImagePermission
+from api.models import User, Car, Booking, CarImage, Review
+from api.permissions import UserPermission, CarPermission, BookingPermission, CarImagePermission, ReviewPermission
 from api.serializers import (
     ContactFormSerializer,
     UserSerializer,
@@ -23,6 +23,7 @@ from api.serializers import (
     CarListSerializer,
     BookingSerializer,
     CarImageSerializer,
+    ReviewSerializer,
 )
 
 
@@ -261,3 +262,18 @@ class CarImageViewSet(viewsets.ModelViewSet):
         if car.owner != user and not user.is_superuser:
             raise PermissionError("You can only add images to your own cars.")
         serializer.save()
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+    def get_permissions(self):
+        if self.action in ["list", "retrieve"]:
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAuthenticated, ReviewPermission]
+        return [permission() for permission in permission_classes]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
