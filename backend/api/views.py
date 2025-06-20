@@ -8,13 +8,13 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.shortcuts import render, redirect
 from django.core.mail import send_mail
 from django.http import JsonResponse
-from rest_framework import mixins, viewsets, generics
+from rest_framework import mixins, viewsets
 from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from datetime import datetime
-from api.models import User, Car, Booking
-from api.permissions import UserPermission, CarPermission, BookingPermission
+from api.models import User, Car, Booking, CarImage
+from api.permissions import UserPermission, CarPermission, BookingPermission, CarImagePermission
 from api.serializers import (
     ContactFormSerializer,
     UserSerializer,
@@ -22,6 +22,7 @@ from api.serializers import (
     CarDetailSerializer,
     CarListSerializer,
     BookingSerializer,
+    CarImageSerializer,
 )
 
 
@@ -241,3 +242,22 @@ class BookingViewSet(viewsets.ModelViewSet):
             return Response({"detail": "Not allowed."}, status=403)
         booking.delete()
         return Response({"status": "rejected"})
+    
+
+class CarImageViewSet(viewsets.ModelViewSet):
+    queryset = CarImage.objects.all()
+    serializer_class = CarImageSerializer
+
+    def get_permissions(self):
+        if self.action in ["list", "retrieve"]:
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAuthenticated, CarImagePermission]
+        return [permission() for permission in permission_classes]
+    
+    def perform_create(self, serializer):
+        car = serializer.validated_data.get('car')
+        user = self.request.user
+        if car.owner != user and not user.is_superuser:
+            raise PermissionError("You can only add images to your own cars.")
+        serializer.save()

@@ -10,6 +10,7 @@ from api.views import (
     BookingViewSet,
     UserViewSet,
     CarViewSet,
+    CarImageViewSet,
     home,
     my_bookings,
     profile,
@@ -28,6 +29,7 @@ router = routers.DefaultRouter()
 router.register(r"users", UserViewSet, basename="user")
 router.register("cars", CarViewSet, basename="car")
 router.register("bookings", BookingViewSet, basename="booking")
+router.register("car-images", CarImageViewSet, basename="car-image")
 
 urlpatterns = (
     [

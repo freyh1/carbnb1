@@ -61,7 +61,7 @@ class Car(models.Model):
     model = models.CharField(max_length=50)
     year = models.PositiveBigIntegerField(validators=[validate_year])
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="cars")
-    seats = models.PositiveIntegerField(max_length=2)
+    seats = models.PositiveIntegerField()
     price_per_day = models.DecimalField(max_digits=8, decimal_places=2)
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True)
     transmission = models.CharField(max_length=10, choices=TRANSMISSION_CHOICES)
