@@ -6,14 +6,14 @@ import Navbar from "@/components/common/navbar";
 import CarCard from "@/components/common/car-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getCars } from "@/lib/api";
+import { fetchFromAPI, api } from "@/lib/api";
 import { Car } from "@/types/car";
 
 export default function Home() {
   const [cars, setCars] = useState<Car[]>([]);
 
   useEffect(() => {
-    getCars()
+    fetchFromAPI<Car[]>(api.cars.base)
       .then(setCars)
       .catch((err) => console.error("Failed to fetch cars:", err));
   }, []);
@@ -53,10 +53,12 @@ export default function Home() {
                 key={car.id}
                 car={{
                   id: car.id,
-                  title: `${car.make} ${car.model}`,
-                  location: `${car.location?.city}, ${car.location?.country}`,
-                  price: `$${car.price_per_day}/night`,
-                  image: car.images[0]?.image || "/placeholder.jpg",
+                  make: car.make,
+                  model: car.model,
+                  location: car.location,
+                  pricePerDay: car.pricePerDay,
+                  images: car.images || "/placeholder.jpg",
+                  isAvailable: car.isAvailable,
                 }}
               />
             ))}

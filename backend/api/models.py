@@ -40,13 +40,21 @@ FUEL_TYPE_CHOICES = [
 
 
 class Location(models.Model):
-    city = models.CharField(max_length=100)
     address = models.TextField()
+    city = models.CharField(max_length=100)
     postal_code = models.CharField(max_length=20)
     country = models.CharField(max_length=100)
 
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+
     def __str__(self):
         return f"{self.address}, {self.city}"
+
+    @property
+    def coordinates(self):
+        return {"lat": float(self.latitude), "lng": float(self.longitude)}
+
 
 def validate_year(value):
     current_year = datetime.now().year
@@ -84,8 +92,9 @@ class CarImage(models.Model):
     car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name="images")
     image = models.ImageField(upload_to="car_images/")
 
-    def __str__(self):
-        return f"Image for {self.car}"
+def __str__(self):
+    return self.image.url if self.image else "No image"
+
 
 class Booking(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookings')

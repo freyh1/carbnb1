@@ -68,6 +68,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5500",
+    "http://localhost:3000",
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -88,24 +89,28 @@ TEMPLATES = [
     },
 ]
 
-# SIMPLE_JWT = {
-#     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=500) if DEBUG else timedelta(minutes=5),
-#     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-#     'ROTATE_REFRESH_TOKENS': True,
-#     'BLACKLIST_AFTER_ROTATION': True,
-#     'UPDATE_LAST_LOGIN': True,
-#     "USER_ID_FIELD": "id",
-#     "USER_ID_CLAIM": "id",
-#     "SIGNING_KEY": os.environ.get("JWT_SECRET_KEY"),
-# }
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=500) if DEBUG else timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': True,
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "id",
+    "SIGNING_KEY": os.environ.get("JWT_SECRET_KEY"),
+}
 
 AUTH_USER_MODEL = "api.User"
 
 REST_AUTH = {
-    'USE_JWT': False,
+    'USE_JWT': True,
+    'JWT_AUTH_COOKIE': 'access-token',        # name of the cookie to store the access token
+    'JWT_AUTH_REFRESH_COOKIE': 'refresh-token',  # optionally store refresh token too
+    'JWT_AUTH_SAMESITE': 'Lax',               # or 'Strict'/'None' depending on your frontend domain
     'USER_DETAILS_SERIALIZER': 'api.serializers.UserSerializer',
     'PASSWORD_RESET_SERIALIZER': 'api.serializers.PasswordResetSerializer',
 }
+
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": (
@@ -113,7 +118,7 @@ REST_FRAMEWORK = {
     ),
 
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 
     'DEFAULT_RENDERER_CLASSES': (
