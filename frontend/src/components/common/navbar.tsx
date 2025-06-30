@@ -13,8 +13,12 @@ export default function Navbar() {
           <Input placeholder="Search cars" />
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost">Login</Button>
-          <Button>Sign up</Button>
+          <Button asChild variant="ghost">
+            <Link href="/login">Login</Link>
+          </Button>
+          <Button asChild>
+            <Link href="/register">Sign up</Link>
+          </Button>
         </div>
       </div>
     </header>
