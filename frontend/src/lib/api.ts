@@ -1,4 +1,4 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
 function getCookie(name: string): string | undefined {
   const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));

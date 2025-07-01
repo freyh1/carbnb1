@@ -3,7 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
-from django.contrib.auth import login as auth_login, logout as auth_logout
+from django.contrib.auth import login as auth_login, logout as auth_logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.shortcuts import render, redirect
 from django.core.mail import send_mail
@@ -25,6 +25,7 @@ from api.serializers import (
     CarImageSerializer,
     ReviewSerializer,
 )
+from rest_framework.views import APIView
 
 
 
@@ -83,8 +84,6 @@ class CarViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        if self.action == "list" and self.request.user.is_authenticated:
-            qs = qs.exclude(owner=self.request.user)
         return qs
 
     def get_permissions(self):
@@ -156,62 +155,47 @@ class CarViewSet(viewsets.ModelViewSet):
     ordering_fields = ['price_per_day', 'year']
 
 
-def home(request):
-    return render(request, "home.html")
 
-
-def signup(request):
-    if request.method == "POST":
-        form = UserCreationForm(request.POST)
+class Signup(APIView):
+    def post(self, request):
+        form = UserCreationForm(request.data)
         if form.is_valid():
             user = form.save()
             auth_login(request, user)
-            return redirect("home")
-    else:
-        form = UserCreationForm()
-    return render(request, "signup.html", {"form": form})
+            return Response({"message": "Signup successful"}, status=201)
+        else:
+            return Response(form.errors, status=400)
 
 
-def login(request):
-    if request.method == "POST":
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
+class Login(APIView):
+    def post(self, request):
+        username = request.data.get("username")
+        password = request.data.get("password")
+
+        user = authenticate(request, username, password)
+        if user is not None:
             auth_login(request, user)
-            return redirect("home")
-    else:
-        form = AuthenticationForm(request)
-    return render(request, "login.html", {"form": form})
+            return Response({"message": "Login successful"}, status=200)
+        else:
+            return Response({"error": "Invalid credentials"}, status=400)
 
 
-def logout(request):
-    auth_logout(request)
-    return redirect("home")
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
 
-@login_required
-def my_car_listings(request):
-    return render(request, "my_cars.html")
-
-@login_required
-def create_car(request):
-    return render(request, "create_car.html")
+    def post(self, request):
+        auth_logout(request)
+        return Response({"message": "Logged out successfully"}, status=200)
 
 
-def car_detail(request, car_id: int):
-    return render(request, "car_detail.html", {"car_id": car_id})
+class MyCarListingsView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def get(self, request):
+        cars = Car.objects.filter(owner=request.user)
+        serializer = CarListSerializer(cars, many=True)
+        return Response(serializer.data)
 
-@login_required
-def book_car(request, car_id: int):
-    return render(request, "book_car.html", {"car_id": car_id})
-
-@login_required
-def my_bookings(request):
-    return render(request, "my_bookings.html")
-
-@login_required
-def profile(request):
-    return render(request, "profile.html")
 
 class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
